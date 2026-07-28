@@ -13,6 +13,7 @@ import {
   HelpCircle,
   X,
   Layers,
+  HardDrive,
 } from 'lucide-react';
 
 export interface MobileMenuProps {
@@ -38,6 +39,7 @@ export const MobileMenu: React.FC<MobileMenuProps> = ({
     { id: 'channels', label: 'Social Accounts', icon: Share2 },
     { id: 'analytics', label: 'Analytics', icon: BarChart3 },
     { id: 'logs', label: 'Activity Logs', icon: History },
+    { id: 'storage', label: 'Storage Manager', icon: HardDrive },
     { id: 'settings', label: 'Settings', icon: Settings },
     { id: 'profile', label: 'Profile', icon: UserCheck },
     { id: 'help', label: 'Help & Docs', icon: HelpCircle },

@@ -8,6 +8,7 @@ import { ChannelManager } from './components/ChannelManager';
 import { AnalyticsView } from './components/AnalyticsView';
 import { TemplateManager } from './components/TemplateManager';
 import { ActivityLogs } from './components/ActivityLogs';
+import { StorageDashboard } from './components/storage/StorageDashboard';
 import { SettingsView } from './components/SettingsView';
 import { HelpView } from './components/HelpView';
 import { ChangelogView } from './components/ChangelogView';
@@ -280,6 +281,13 @@ function AppContent() {
       {activeTab === 'logs' && (
         <ProtectedRoute onRedirectToLogin={() => setActiveTab('login')}>
           <ActivityLogs logs={logs} />
+        </ProtectedRoute>
+      )}
+
+      {/* Route: /dashboard/storage */}
+      {activeTab === 'storage' && (
+        <ProtectedRoute onRedirectToLogin={() => setActiveTab('login')}>
+          <StorageDashboard />
         </ProtectedRoute>
       )}
 
