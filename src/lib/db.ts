@@ -52,12 +52,12 @@ class IndexedDBEngineAdapter {
     return list.map((c) => ({
       id: c.id,
       platform: (['facebook', 'instagram', 'linkedin', 'github'].includes(c.platform) ? c.platform : 'linkedin') as SocialPlatform,
-      accountName: c.username,
-      handle: c.username,
-      isConnected: c.status === 'connected',
+      accountName: c.accountName || c.username || 'Account',
+      handle: c.accountName || c.username || 'handle',
+      isConnected: c.status === 'Connected' || c.status === 'connected',
       autoPublish: false,
       followerCount: 1200,
-      status: c.status === 'connected' ? 'active' : 'disconnected',
+      status: c.status === 'Connected' || c.status === 'connected' ? 'active' : 'disconnected',
     }));
   }
 
@@ -65,8 +65,10 @@ class IndexedDBEngineAdapter {
     await socialAccountService.save({
       id: channel.id,
       platform: channel.platform,
+      accountName: channel.accountName || channel.handle,
       username: channel.handle || channel.accountName,
-      status: channel.isConnected ? 'connected' : 'disconnected',
+      accountId: `acc_${channel.id}`,
+      status: channel.isConnected ? 'Connected' : 'Disconnected',
     });
   }
 

@@ -4,6 +4,27 @@ import { SettingRecord } from '../types';
 
 const DEFAULT_SETTINGS_KEY = 'app_settings';
 
+export const DEFAULT_USER_SETTINGS: SettingRecord = {
+  id: DEFAULT_SETTINGS_KEY,
+  userId: 'user_default',
+  theme: 'system',
+  language: 'EN',
+  timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC',
+  dateFormat: 'YYYY-MM-DD',
+  timeFormat: '24h',
+  notifications: {
+    enabled: true,
+    postReminder: true,
+    scheduleReminder: true,
+    systemAlerts: true,
+  },
+  storageLimit: 500,
+  autoCleanup: true,
+  cleanupFrequency: 'weekly',
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+};
+
 export class SettingService {
   async getSettings(): Promise<SettingRecord> {
     const db = await dbConnection.getConnection();
@@ -13,18 +34,17 @@ export class SettingService {
       const req = store.get(DEFAULT_SETTINGS_KEY);
       req.onsuccess = () => {
         if (req.result) {
-          resolve(req.result);
+          // Merge with defaults to guarantee all fields exist
+          resolve({
+            ...DEFAULT_USER_SETTINGS,
+            ...req.result,
+            notifications: {
+              ...DEFAULT_USER_SETTINGS.notifications,
+              ...(req.result.notifications || {}),
+            },
+          });
         } else {
-          // Default fallback settings
-          const defaultSettings: SettingRecord = {
-            id: DEFAULT_SETTINGS_KEY,
-            theme: 'dark',
-            language: 'EN',
-            timezone: 'UTC',
-            storageLimit: 500,
-            autoCleanup: true,
-          };
-          resolve(defaultSettings);
+          resolve({ ...DEFAULT_USER_SETTINGS });
         }
       };
       req.onerror = () => reject(req.error);
@@ -36,7 +56,12 @@ export class SettingService {
     const updated: SettingRecord = {
       ...current,
       ...settings,
+      notifications: {
+        ...current.notifications,
+        ...(settings.notifications || {}),
+      },
       id: DEFAULT_SETTINGS_KEY,
+      updatedAt: new Date().toISOString(),
     };
 
     const db = await dbConnection.getConnection();

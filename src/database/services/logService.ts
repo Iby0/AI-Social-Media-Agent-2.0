@@ -41,6 +41,10 @@ export class LogService {
     });
   }
 
+  async addLog(entry: { message: string; type?: LogRecord['type']; status?: LogRecord['status'] }): Promise<LogRecord> {
+    return this.log(entry.message, entry.type || 'system', entry.status || 'info');
+  }
+
   async delete(id: string): Promise<void> {
     const db = await dbConnection.getConnection();
     return new Promise((resolve, reject) => {

@@ -54,11 +54,25 @@ export class SocialAccountService {
     });
   }
 
+  async updateStatus(id: string, status: SocialAccountRecord['status']): Promise<SocialAccountRecord | null> {
+    const record = await this.getById(id);
+    if (!record) return null;
+    record.status = status;
+    record.updatedAt = new Date().toISOString();
+    return await this.save(record);
+  }
+
   async search(query: string): Promise<SocialAccountRecord[]> {
     const all = await this.getAll();
     const q = query.toLowerCase().trim();
     if (!q) return all;
-    return all.filter((a) => a.platform.toLowerCase().includes(q) || a.username.toLowerCase().includes(q));
+    return all.filter(
+      (a) =>
+        a.platform.toLowerCase().includes(q) ||
+        (a.accountName && a.accountName.toLowerCase().includes(q)) ||
+        (a.username && a.username.toLowerCase().includes(q)) ||
+        (a.accountId && a.accountId.toLowerCase().includes(q))
+    );
   }
 
   async clear(): Promise<void> {

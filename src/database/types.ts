@@ -9,16 +9,33 @@ export interface UserRecord {
   updatedAt: string;
 }
 
+export type ContentPostStatus =
+  | 'Draft'
+  | 'Review'
+  | 'Ready'
+  | 'Scheduled'
+  | 'Publishing'
+  | 'Published'
+  | 'Failed'
+  | 'Archived';
+
 export interface PostRecord {
   id: string;
+  userId?: string;
   title: string;
   caption: string;
-  content: string;
-  platform: string;
-  status: 'draft' | 'scheduled' | 'published' | 'archived';
+  description?: string;
+  content?: string;
+  hashtags?: string[];
+  platform: string; // 'facebook' | 'instagram' | 'linkedin' | 'twitter' | 'all'
+  mediaIds?: string[];
   image?: string;
+  status: ContentPostStatus | 'draft' | 'scheduled' | 'published' | 'archived' | 'failed';
+  category?: string;
   createdAt: string;
   updatedAt: string;
+  scheduledAt?: string;
+  publishedAt?: string;
 }
 
 export interface ScheduleRecord {
@@ -47,14 +64,36 @@ export interface MediaRecord {
   updatedAt?: string;
 }
 
-export interface SettingRecord {
+export type ThemeOption = 'light' | 'dark' | 'system';
+export type LanguageOption = 'EN' | 'BN';
+export type DateFormatOption = 'YYYY-MM-DD' | 'MM/DD/YYYY' | 'DD/MM/YYYY';
+export type TimeFormatOption = '12h' | '24h';
+export type CleanupFrequencyOption = 'daily' | 'weekly' | 'monthly' | 'never';
+
+export interface NotificationPreferences {
+  enabled: boolean;
+  postReminder: boolean;
+  scheduleReminder: boolean;
+  systemAlerts: boolean;
+}
+
+export interface UserSettings {
   id: string; // Key, e.g., 'app_settings'
-  theme: 'light' | 'dark' | 'system';
-  language: string;
+  userId: string;
+  theme: ThemeOption;
+  language: LanguageOption;
   timezone: string;
+  dateFormat: DateFormatOption;
+  timeFormat: TimeFormatOption;
+  notifications: NotificationPreferences;
   storageLimit: number; // in MB (e.g. 500)
   autoCleanup: boolean;
+  cleanupFrequency: CleanupFrequencyOption;
+  createdAt: string;
+  updatedAt: string;
 }
+
+export interface SettingRecord extends UserSettings {}
 
 export interface LogRecord {
   id: string;
@@ -64,12 +103,24 @@ export interface LogRecord {
   createdAt: string;
 }
 
+export type SocialPlatform = 'facebook' | 'instagram' | 'linkedin' | 'github' | string;
+export type SocialAccountStatus = 'Connected' | 'Disconnected' | 'Expired' | 'Error' | 'Pending';
+
 export interface SocialAccountRecord {
   id: string;
-  platform: string;
-  username: string;
-  status: 'connected' | 'disconnected' | 'expired';
+  userId?: string;
+  platform: SocialPlatform;
+  accountName: string;
+  username?: string; // Backwards compatibility alias
+  accountId: string;
+  avatar?: string;
+  status: SocialAccountStatus | 'connected' | 'disconnected' | 'expired' | 'error' | 'pending';
+  accessToken?: string;
+  refreshToken?: string;
+  tokenExpiry?: string;
+  permissions?: string[];
   connectedAt: string;
+  updatedAt?: string;
 }
 
 export interface StorageInfo {

@@ -15,6 +15,7 @@ import {
   ShieldCheck,
   Layers,
   HardDrive,
+  FileText,
 } from 'lucide-react';
 
 export interface DashboardSidebarProps {
@@ -45,6 +46,7 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
 
   const navItems = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
+    { id: 'content', label: 'Content Library', icon: FileText },
     { id: 'studio', label: 'Content Generator', icon: Sparkles, badge: draftCount > 0 ? `${draftCount}` : undefined },
     { id: 'media', label: 'Media Library', icon: ImageIcon },
     { id: 'calendar', label: 'Scheduler', icon: Calendar },

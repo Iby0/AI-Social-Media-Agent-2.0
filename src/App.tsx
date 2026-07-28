@@ -11,6 +11,8 @@ import { ActivityLogs } from './components/ActivityLogs';
 import { StorageDashboard } from './components/storage/StorageDashboard';
 import { SettingsView } from './components/SettingsView';
 import { HelpView } from './components/HelpView';
+import { ContentLayout } from './components/content/ContentLayout';
+import { SocialAccountPage } from './components/social/SocialAccountPage';
 import { ChangelogView } from './components/ChangelogView';
 import { LoginView } from './components/auth/LoginView';
 import { RegisterView } from './components/auth/RegisterView';
@@ -18,6 +20,7 @@ import { ForgotPasswordView } from './components/auth/ForgotPasswordView';
 import { ProfileView } from './components/auth/ProfileView';
 import { ProtectedRoute } from './middleware/ProtectedRoute';
 import { AuthProvider } from './providers/AuthProvider';
+import { SettingsProvider } from './providers/SettingsContext';
 
 import { Post, SocialChannel, PromptTemplate, AnalyticsMetric, ActivityLog, BackupSettings, PostStatus } from './types';
 import { db } from './lib/db';
@@ -225,6 +228,20 @@ function AppContent() {
         </ProtectedRoute>
       )}
 
+      {/* Route: /dashboard/content (Content Foundation Hub) */}
+      {activeTab === 'content' && (
+        <ProtectedRoute onRedirectToLogin={() => setActiveTab('login')}>
+          <ContentLayout initialTab="library" />
+        </ProtectedRoute>
+      )}
+
+      {/* Route: /dashboard/create-post (Direct Create Post) */}
+      {activeTab === 'create-post' && (
+        <ProtectedRoute onRedirectToLogin={() => setActiveTab('login')}>
+          <ContentLayout initialTab="create" />
+        </ProtectedRoute>
+      )}
+
       {/* Route: /dashboard/studio (Content Generator) */}
       {activeTab === 'studio' && (
         <ProtectedRoute onRedirectToLogin={() => setActiveTab('login')}>
@@ -251,10 +268,10 @@ function AppContent() {
         </ProtectedRoute>
       )}
 
-      {/* Route: /dashboard/channels (Social Accounts) */}
-      {activeTab === 'channels' && (
+      {/* Route: /dashboard/channels or /dashboard/social (Social Accounts Hub) */}
+      {(activeTab === 'channels' || activeTab === 'social') && (
         <ProtectedRoute onRedirectToLogin={() => setActiveTab('login')}>
-          <ChannelManager channels={channels} onSaveChannel={handleSaveChannel} onLogActivity={handleLogActivity} />
+          <SocialAccountPage />
         </ProtectedRoute>
       )}
 
@@ -322,7 +339,9 @@ function AppContent() {
 export default function App() {
   return (
     <AuthProvider>
-      <AppContent />
+      <SettingsProvider>
+        <AppContent />
+      </SettingsProvider>
     </AuthProvider>
   );
 }
