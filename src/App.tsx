@@ -1,21 +1,29 @@
 import React, { useState, useEffect } from 'react';
-import { Header } from './components/Header';
-import { Sidebar } from './components/Sidebar';
+import { DashboardLayout } from './components/dashboard/DashboardLayout';
+import { DashboardHome } from './components/dashboard/DashboardHome';
 import { PostStudio } from './components/PostStudio';
+import { MediaLibraryView } from './components/MediaLibraryView';
 import { CalendarView } from './components/CalendarView';
 import { ChannelManager } from './components/ChannelManager';
 import { AnalyticsView } from './components/AnalyticsView';
 import { TemplateManager } from './components/TemplateManager';
 import { ActivityLogs } from './components/ActivityLogs';
 import { SettingsView } from './components/SettingsView';
+import { HelpView } from './components/HelpView';
 import { ChangelogView } from './components/ChangelogView';
+import { LoginView } from './components/auth/LoginView';
+import { RegisterView } from './components/auth/RegisterView';
+import { ForgotPasswordView } from './components/auth/ForgotPasswordView';
+import { ProfileView } from './components/auth/ProfileView';
+import { ProtectedRoute } from './middleware/ProtectedRoute';
+import { AuthProvider } from './providers/AuthProvider';
 
 import { Post, SocialChannel, PromptTemplate, AnalyticsMetric, ActivityLog, BackupSettings, PostStatus } from './types';
 import { db } from './lib/db';
 import { INITIAL_CHANNELS, INITIAL_POSTS, INITIAL_TEMPLATES, INITIAL_ANALYTICS } from './data/mockData';
 
-export default function App() {
-  const [activeTab, setActiveTab] = useState('studio');
+function AppContent() {
+  const [activeTab, setActiveTab] = useState('dashboard');
   const [posts, setPosts] = useState<Post[]>([]);
   const [channels, setChannels] = useState<SocialChannel[]>([]);
   const [templates, setTemplates] = useState<PromptTemplate[]>([]);
@@ -23,8 +31,9 @@ export default function App() {
   const [logs, setLogs] = useState<ActivityLog[]>([]);
   const [settings, setSettings] = useState<BackupSettings | null>(null);
   const [isSyncing, setIsSyncing] = useState(false);
+  const [searchFilter, setSearchFilter] = useState('');
 
-  // Initialize IndexedDB Data
+  // Initialize IndexedDB Database Data
   const loadDatabase = async () => {
     setIsSyncing(true);
     try {
@@ -35,7 +44,7 @@ export default function App() {
       let existingLogs = await db.getAllLogs();
       let existingSettings = await db.getSettings();
 
-      // Seed if empty
+      // Seed default datasets if empty
       if (existingPosts.length === 0) {
         for (const p of INITIAL_POSTS) await db.savePost(p);
         existingPosts = INITIAL_POSTS;
@@ -53,7 +62,7 @@ export default function App() {
         existingAnalytics = INITIAL_ANALYTICS;
       }
       if (existingLogs.length === 0) {
-        await db.logActivity('IndexedDB Initialized', 'system', 'Database initialized with seed dataset', 'info');
+        await db.logActivity('IndexedDB Initialized', 'system', 'Database initialized with Module 06 dataset', 'info');
         existingLogs = await db.getAllLogs();
       }
 
@@ -65,7 +74,7 @@ export default function App() {
       setSettings(existingSettings);
     } catch (err) {
       console.error('IndexedDB Load Error:', err);
-    } finally {
+    } fontFinally: {
       setIsSyncing(false);
     }
   };
@@ -88,10 +97,10 @@ export default function App() {
               ...p,
               status: 'published',
               publishedAt: now.toISOString(),
-              metrics: { impressions: 120, likes: 14, shares: 3, comments: 2 },
+              metrics: { impressions: 145, likes: 22, shares: 5, comments: 3 },
             };
             await db.savePost(updated);
-            await db.logActivity('Auto-Publisher Executed', 'post', `Post "${p.title}" auto-published.`, 'success');
+            await db.logActivity('Auto-Publisher Executed', 'post', `Post "${p.title}" auto-published via schedule.`, 'success');
             updatedCount++;
           }
         }
@@ -100,7 +109,7 @@ export default function App() {
       if (updatedCount > 0) {
         loadDatabase();
       }
-    }, 15000); // Check every 15s
+    }, 15000);
 
     return () => clearInterval(interval);
   }, [posts]);
@@ -147,7 +156,7 @@ export default function App() {
     await loadDatabase();
   };
 
-  const handleUseTemplate = (template: PromptTemplate) => {
+  const handleUseTemplate = (_template: PromptTemplate) => {
     setActiveTab('studio');
   };
 
@@ -164,67 +173,148 @@ export default function App() {
 
   const draftCount = posts.filter((p) => p.status === 'draft').length;
 
-  return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 font-sans flex flex-col selection:bg-indigo-500 selection:text-white">
-      {/* Top Header */}
-      <Header
-        channels={channels}
-        posts={posts}
-        activeTab={activeTab}
-        setActiveTab={setActiveTab}
-        onRefreshData={loadDatabase}
-        isSyncing={isSyncing}
-      />
-
-      {/* Main App Workspace */}
-      <div className="flex-1 flex flex-col md:flex-row overflow-hidden">
-        {/* Left Sidebar Navigation */}
-        <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} draftCount={draftCount} />
-
-        {/* Dynamic Workspace Container */}
-        <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto max-w-7xl mx-auto w-full">
-          {activeTab === 'studio' && (
-            <PostStudio onSavePost={handleSavePost} templates={templates} onLogActivity={handleLogActivity} />
-          )}
-
-          {activeTab === 'calendar' && (
-            <CalendarView
-              posts={posts}
-              onUpdatePostStatus={handleUpdatePostStatus}
-              onDeletePost={handleDeletePost}
-              onLogActivity={handleLogActivity}
-            />
-          )}
-
-          {activeTab === 'channels' && (
-            <ChannelManager channels={channels} onSaveChannel={handleSaveChannel} onLogActivity={handleLogActivity} />
-          )}
-
-          {activeTab === 'analytics' && <AnalyticsView analytics={analytics} posts={posts} />}
-
-          {activeTab === 'templates' && (
-            <TemplateManager
-              templates={templates}
-              onSaveTemplate={handleSaveTemplate}
-              onDeleteTemplate={handleDeleteTemplate}
-              onUseTemplate={handleUseTemplate}
-            />
-          )}
-
-          {activeTab === 'logs' && <ActivityLogs logs={logs} />}
-
-          {activeTab === 'settings' && (
-            <SettingsView
-              settings={settings}
-              onSaveSettings={handleSaveSettings}
-              onLogActivity={handleLogActivity}
-              onReloadData={loadDatabase}
-            />
-          )}
-
-          {activeTab === 'changelog' && <ChangelogView />}
-        </main>
+  // Render standalone Auth Screens if in login/register/forgot-password mode
+  if (activeTab === 'login') {
+    return (
+      <div className="min-h-screen bg-slate-950 flex items-center justify-center p-4">
+        <LoginView
+          onNavigateToRegister={() => setActiveTab('register')}
+          onNavigateToForgotPassword={() => setActiveTab('forgot-password')}
+          onSuccess={() => setActiveTab('dashboard')}
+        />
       </div>
-    </div>
+    );
+  }
+
+  if (activeTab === 'register') {
+    return (
+      <div className="min-h-screen bg-slate-950 flex items-center justify-center p-4">
+        <RegisterView
+          onNavigateToLogin={() => setActiveTab('login')}
+          onSuccess={() => setActiveTab('dashboard')}
+        />
+      </div>
+    );
+  }
+
+  if (activeTab === 'forgot-password') {
+    return (
+      <div className="min-h-screen bg-slate-950 flex items-center justify-center p-4">
+        <ForgotPasswordView onNavigateToLogin={() => setActiveTab('login')} />
+      </div>
+    );
+  }
+
+  return (
+    <DashboardLayout
+      activeTab={activeTab}
+      setActiveTab={setActiveTab}
+      draftCount={draftCount}
+      onSearchQuery={(q) => setSearchFilter(q)}
+    >
+      {/* Route: /dashboard */}
+      {activeTab === 'dashboard' && (
+        <ProtectedRoute onRedirectToLogin={() => setActiveTab('login')}>
+          <DashboardHome
+            posts={posts}
+            channels={channels}
+            logs={logs}
+            onNavigateTab={(tab) => setActiveTab(tab)}
+          />
+        </ProtectedRoute>
+      )}
+
+      {/* Route: /dashboard/studio (Content Generator) */}
+      {activeTab === 'studio' && (
+        <ProtectedRoute onRedirectToLogin={() => setActiveTab('login')}>
+          <PostStudio onSavePost={handleSavePost} templates={templates} onLogActivity={handleLogActivity} />
+        </ProtectedRoute>
+      )}
+
+      {/* Route: /dashboard/media (Media Asset Library) */}
+      {activeTab === 'media' && (
+        <ProtectedRoute onRedirectToLogin={() => setActiveTab('login')}>
+          <MediaLibraryView />
+        </ProtectedRoute>
+      )}
+
+      {/* Route: /dashboard/calendar (Scheduler) */}
+      {activeTab === 'calendar' && (
+        <ProtectedRoute onRedirectToLogin={() => setActiveTab('login')}>
+          <CalendarView
+            posts={posts}
+            onUpdatePostStatus={handleUpdatePostStatus}
+            onDeletePost={handleDeletePost}
+            onLogActivity={handleLogActivity}
+          />
+        </ProtectedRoute>
+      )}
+
+      {/* Route: /dashboard/channels (Social Accounts) */}
+      {activeTab === 'channels' && (
+        <ProtectedRoute onRedirectToLogin={() => setActiveTab('login')}>
+          <ChannelManager channels={channels} onSaveChannel={handleSaveChannel} onLogActivity={handleLogActivity} />
+        </ProtectedRoute>
+      )}
+
+      {/* Route: /dashboard/analytics */}
+      {activeTab === 'analytics' && (
+        <ProtectedRoute onRedirectToLogin={() => setActiveTab('login')}>
+          <AnalyticsView analytics={analytics} posts={posts} />
+        </ProtectedRoute>
+      )}
+
+      {/* Route: /dashboard/templates */}
+      {activeTab === 'templates' && (
+        <ProtectedRoute onRedirectToLogin={() => setActiveTab('login')}>
+          <TemplateManager
+            templates={templates}
+            onSaveTemplate={handleSaveTemplate}
+            onDeleteTemplate={handleDeleteTemplate}
+            onUseTemplate={handleUseTemplate}
+          />
+        </ProtectedRoute>
+      )}
+
+      {/* Route: /dashboard/logs */}
+      {activeTab === 'logs' && (
+        <ProtectedRoute onRedirectToLogin={() => setActiveTab('login')}>
+          <ActivityLogs logs={logs} />
+        </ProtectedRoute>
+      )}
+
+      {/* Route: /dashboard/settings */}
+      {activeTab === 'settings' && (
+        <ProtectedRoute onRedirectToLogin={() => setActiveTab('login')}>
+          <SettingsView
+            settings={settings}
+            onSaveSettings={handleSaveSettings}
+            onLogActivity={handleLogActivity}
+            onReloadData={loadDatabase}
+          />
+        </ProtectedRoute>
+      )}
+
+      {/* Route: /dashboard/profile */}
+      {activeTab === 'profile' && (
+        <ProtectedRoute onRedirectToLogin={() => setActiveTab('login')}>
+          <ProfileView />
+        </ProtectedRoute>
+      )}
+
+      {/* Route: /dashboard/help */}
+      {activeTab === 'help' && <HelpView />}
+
+      {/* Route: /dashboard/changelog */}
+      {activeTab === 'changelog' && <ChangelogView />}
+    </DashboardLayout>
+  );
+}
+
+export default function App() {
+  return (
+    <AuthProvider>
+      <AppContent />
+    </AuthProvider>
   );
 }

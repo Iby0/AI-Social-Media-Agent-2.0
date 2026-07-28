@@ -9,7 +9,8 @@ import {
   Settings,
   FileCode2,
   CheckCircle2,
-  HardDrive
+  HardDrive,
+  UserCheck,
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -25,6 +26,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, draft
     { id: 'channels', label: 'Channel Manager', icon: Share2 },
     { id: 'analytics', label: 'Analytics & Insights', icon: BarChart3 },
     { id: 'templates', label: 'Prompt Templates', icon: Bookmark },
+    { id: 'profile', label: 'User Profile', icon: UserCheck },
     { id: 'logs', label: 'Activity Audit Log', icon: History },
     { id: 'settings', label: 'Backup & Settings', icon: Settings },
     { id: 'changelog', label: 'v2.0 Changelog', icon: FileCode2 },
