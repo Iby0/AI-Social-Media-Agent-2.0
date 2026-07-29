@@ -9,6 +9,67 @@ import {
 } from '../database';
 
 class IndexedDBEngineAdapter {
+  posts = {
+    toArray: async (): Promise<Post[]> => this.getAllPosts(),
+    clear: async (): Promise<void> => {
+      const posts = await this.getAllPosts();
+      for (const p of posts) {
+        await this.deletePost(p.id);
+      }
+    },
+    bulkAdd: async (items: Post[]): Promise<void> => {
+      for (const item of items) {
+        await this.savePost(item);
+      }
+    },
+  };
+
+  channels = {
+    toArray: async (): Promise<SocialChannel[]> => this.getAllChannels(),
+    clear: async (): Promise<void> => {
+      const channels = await this.getAllChannels();
+      for (const c of channels) {
+        await socialAccountService.delete(c.id);
+      }
+    },
+    bulkAdd: async (items: SocialChannel[]): Promise<void> => {
+      for (const item of items) {
+        await this.saveChannel(item);
+      }
+    },
+  };
+
+  workflows = {
+    toArray: async (): Promise<any[]> => {
+      try {
+        const raw = localStorage.getItem('ai_social_workflows');
+        return raw ? JSON.parse(raw) : [];
+      } catch {
+        return [];
+      }
+    },
+    clear: async (): Promise<void> => {
+      localStorage.removeItem('ai_social_workflows');
+    },
+    bulkAdd: async (items: any[]): Promise<void> => {
+      localStorage.setItem('ai_social_workflows', JSON.stringify(items));
+    },
+  };
+
+  activityLogs = {
+    toArray: async (): Promise<ActivityLog[]> => this.getAllLogs(),
+    clear: async (): Promise<void> => {
+      try {
+        localStorage.removeItem('ai_social_activity_logs');
+      } catch {}
+    },
+    bulkAdd: async (items: ActivityLog[]): Promise<void> => {
+      for (const item of items) {
+        await this.logActivity(item.action, item.category, item.details, item.status);
+      }
+    },
+  };
+
   // Posts
   async getAllPosts(): Promise<Post[]> {
     const list = await postService.getAll();

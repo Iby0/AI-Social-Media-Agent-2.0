@@ -21,6 +21,15 @@ import { ProfileView } from './components/auth/ProfileView';
 import { ProtectedRoute } from './middleware/ProtectedRoute';
 import { AuthProvider } from './providers/AuthProvider';
 import { SettingsProvider } from './providers/SettingsContext';
+import { AIProvider } from './context/AIContext';
+import { AIContentEngine } from './components/ai/AIContentEngine';
+import { AIContentImageEngine } from './components/image-ai/ImageAIEngine';
+import { WorkflowDashboard } from './components/workflow/WorkflowDashboard';
+import { PublishDashboard } from './components/publishing/PublishDashboard';
+import { AgentDashboard } from './components/agent/AgentDashboard';
+import { AnalyticsDashboard } from './components/analytics/AnalyticsDashboard';
+import { BackupDashboard } from './components/backup/BackupDashboard';
+import { PluginDashboard } from './components/plugins/PluginDashboard';
 
 import { Post, SocialChannel, PromptTemplate, AnalyticsMetric, ActivityLog, BackupSettings, PostStatus } from './types';
 import { db } from './lib/db';
@@ -228,6 +237,41 @@ function AppContent() {
         </ProtectedRoute>
       )}
 
+      {/* Route: /dashboard/ai (AI Content Generation Engine) */}
+      {activeTab === 'ai' && (
+        <ProtectedRoute onRedirectToLogin={() => setActiveTab('login')}>
+          <AIContentEngine />
+        </ProtectedRoute>
+      )}
+
+      {/* Route: /dashboard/image-ai (AI Image Generation Engine) */}
+      {activeTab === 'image-ai' && (
+        <ProtectedRoute onRedirectToLogin={() => setActiveTab('login')}>
+          <AIContentImageEngine />
+        </ProtectedRoute>
+      )}
+
+      {/* Route: /dashboard/workflows (AI Scheduler & Automated Workflow Engine) */}
+      {activeTab === 'workflows' && (
+        <ProtectedRoute onRedirectToLogin={() => setActiveTab('login')}>
+          <WorkflowDashboard />
+        </ProtectedRoute>
+      )}
+
+      {/* Route: /dashboard/publishing (Official Social Media Publishing Engine) */}
+      {activeTab === 'publishing' && (
+        <ProtectedRoute onRedirectToLogin={() => setActiveTab('login')}>
+          <PublishDashboard />
+        </ProtectedRoute>
+      )}
+
+      {/* Route: /dashboard/agent (Autonomous AI Agent & Automation Engine) */}
+      {activeTab === 'agent' && (
+        <ProtectedRoute onRedirectToLogin={() => setActiveTab('login')}>
+          <AgentDashboard />
+        </ProtectedRoute>
+      )}
+
       {/* Route: /dashboard/content (Content Foundation Hub) */}
       {activeTab === 'content' && (
         <ProtectedRoute onRedirectToLogin={() => setActiveTab('login')}>
@@ -278,7 +322,21 @@ function AppContent() {
       {/* Route: /dashboard/analytics */}
       {activeTab === 'analytics' && (
         <ProtectedRoute onRedirectToLogin={() => setActiveTab('login')}>
-          <AnalyticsView analytics={analytics} posts={posts} />
+          <AnalyticsDashboard />
+        </ProtectedRoute>
+      )}
+
+      {/* Route: /dashboard/backup */}
+      {activeTab === 'backup' && (
+        <ProtectedRoute onRedirectToLogin={() => setActiveTab('login')}>
+          <BackupDashboard />
+        </ProtectedRoute>
+      )}
+
+      {/* Route: /dashboard/plugins */}
+      {activeTab === 'plugins' && (
+        <ProtectedRoute onRedirectToLogin={() => setActiveTab('login')}>
+          <PluginDashboard />
         </ProtectedRoute>
       )}
 
@@ -340,7 +398,9 @@ export default function App() {
   return (
     <AuthProvider>
       <SettingsProvider>
-        <AppContent />
+        <AIProvider>
+          <AppContent />
+        </AIProvider>
       </SettingsProvider>
     </AuthProvider>
   );

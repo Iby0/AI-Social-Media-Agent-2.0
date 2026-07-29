@@ -7,3 +7,7 @@ export * from './TokenInspectorModal';
 export * from './ConnectModal';
 export * from './SocialAccountList';
 export * from './SocialAccountPage';
+export * from './LinkedInConnectCard';
+export * from './GitHubConnectCard';
+export * from './SocialAccountDetails';
+export * from './OAuthStatus';

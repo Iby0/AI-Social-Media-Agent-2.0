@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import {
   LayoutDashboard,
   Sparkles,
+  Wand2,
   Image as ImageIcon,
   Calendar,
   Share2,
@@ -16,6 +17,11 @@ import {
   Layers,
   HardDrive,
   FileText,
+  Workflow,
+  Send,
+  Bot,
+  Database,
+  Puzzle,
 } from 'lucide-react';
 
 export interface DashboardSidebarProps {
@@ -46,12 +52,19 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
 
   const navItems = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
+    { id: 'ai', label: 'AI Generator Engine', icon: Wand2, badge: 'AI' },
+    { id: 'image-ai', label: 'AI Images', icon: ImageIcon, badge: 'IMG' },
     { id: 'content', label: 'Content Library', icon: FileText },
-    { id: 'studio', label: 'Content Generator', icon: Sparkles, badge: draftCount > 0 ? `${draftCount}` : undefined },
-    { id: 'media', label: 'Media Library', icon: ImageIcon },
+    { id: 'studio', label: 'Post Studio', icon: Sparkles, badge: draftCount > 0 ? `${draftCount}` : undefined },
+    { id: 'media', label: 'Media Library', icon: Layers },
     { id: 'calendar', label: 'Scheduler', icon: Calendar },
+    { id: 'workflows', label: 'Workflows & Queue', icon: Workflow, badge: 'AUTO' },
+    { id: 'publishing', label: 'Official Publishing', icon: Send, badge: 'API' },
+    { id: 'agent', label: 'Autonomous Agent', icon: Bot, badge: 'AGENT' },
     { id: 'channels', label: 'Social Accounts', icon: Share2 },
     { id: 'analytics', label: 'Analytics', icon: BarChart3 },
+    { id: 'backup', label: 'Backup & Restore', icon: Database, badge: 'BAK' },
+    { id: 'plugins', label: 'Plugins & Extensions', icon: Puzzle, badge: 'EXT' },
     { id: 'logs', label: 'Activity Logs', icon: History },
     { id: 'storage', label: 'Storage Manager', icon: HardDrive },
     { id: 'settings', label: 'Settings', icon: Settings },

@@ -105,22 +105,44 @@ export interface LogRecord {
 
 export type SocialPlatform = 'facebook' | 'instagram' | 'linkedin' | 'github' | string;
 export type SocialAccountStatus = 'Connected' | 'Disconnected' | 'Expired' | 'Error' | 'Pending';
+export type AccountHealthLevel = 'Excellent' | 'Good' | 'Warning' | 'Critical' | 'Offline';
+export type TokenState = 'Valid' | 'Expiring Soon' | 'Expired' | 'Refresh Required' | 'Disconnected';
+
+export interface ConnectionHistoryItem {
+  id: string;
+  accountId?: string;
+  platform: SocialPlatform;
+  action: 'Connect' | 'Reconnect' | 'Disconnect' | 'Refresh Token' | 'Health Check' | 'Rename' | 'Toggle State' | 'Permission Sync';
+  time: string;
+  status: 'Success' | 'Warning' | 'Error' | 'Info';
+  result: string;
+}
 
 export interface SocialAccountRecord {
   id: string;
   userId?: string;
   platform: SocialPlatform;
   accountName: string;
+  displayName?: string;
   username?: string; // Backwards compatibility alias
   accountId: string;
+  accountType?: string; // e.g. "Facebook Page", "Instagram Business", "LinkedIn Member", "GitHub Developer"
   avatar?: string;
+  email?: string;
+  repositoriesCount?: number;
+  headline?: string;
+  bio?: string;
   status: SocialAccountStatus | 'connected' | 'disconnected' | 'expired' | 'error' | 'pending';
+  healthLevel?: AccountHealthLevel;
+  enabled?: boolean;
+  lastSyncAt?: string;
   accessToken?: string;
   refreshToken?: string;
   tokenExpiry?: string;
   permissions?: string[];
   connectedAt: string;
   updatedAt?: string;
+  connectionHistory?: ConnectionHistoryItem[];
 }
 
 export interface StorageInfo {
