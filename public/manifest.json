@@ -1,0 +1,22 @@
+{
+  "short_name": "AISocialAgent",
+  "name": "AI Social Media Agent & Autonomous Scheduler",
+  "icons": [
+    {
+      "src": "pwa-192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "pwa-512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#0f172a",
+  "theme_color": "#0f172a",
+  "display": "standalone",
+  "orientation": "portrait",
+  "description": "Offline-first AI Social Media Management & Autonomous Content Scheduler"
+}

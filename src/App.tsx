@@ -31,6 +31,12 @@ import { AnalyticsDashboard } from './components/analytics/AnalyticsDashboard';
 import { BackupDashboard } from './components/backup/BackupDashboard';
 import { PluginDashboard } from './components/plugins/PluginDashboard';
 
+import { SystemProvider } from './context/SystemContext';
+import { ErrorBoundary } from './components/system/ErrorBoundary';
+import { OfflineNotice } from './components/system/OfflineNotice';
+import { InstallPrompt } from './components/system/InstallPrompt';
+import { UpdateNotification } from './components/system/UpdateNotification';
+
 import { Post, SocialChannel, PromptTemplate, AnalyticsMetric, ActivityLog, BackupSettings, PostStatus } from './types';
 import { db } from './lib/db';
 import { INITIAL_CHANNELS, INITIAL_POSTS, INITIAL_TEMPLATES, INITIAL_ANALYTICS } from './data/mockData';
@@ -396,12 +402,19 @@ function AppContent() {
 
 export default function App() {
   return (
-    <AuthProvider>
-      <SettingsProvider>
-        <AIProvider>
-          <AppContent />
-        </AIProvider>
-      </SettingsProvider>
-    </AuthProvider>
+    <ErrorBoundary>
+      <SystemProvider>
+        <AuthProvider>
+          <SettingsProvider>
+            <AIProvider>
+              <AppContent />
+              <OfflineNotice />
+              <InstallPrompt />
+              <UpdateNotification />
+            </AIProvider>
+          </SettingsProvider>
+        </AuthProvider>
+      </SystemProvider>
+    </ErrorBoundary>
   );
 }

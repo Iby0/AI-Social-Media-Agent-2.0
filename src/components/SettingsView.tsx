@@ -9,6 +9,7 @@ import {
 import { BackupSettings } from '../types';
 import { db } from '../lib/db';
 import { SettingsLayout } from './settings/SettingsLayout';
+import { AppStatus } from './system/AppStatus';
 
 interface SettingsViewProps {
   settings?: BackupSettings | null;
@@ -83,6 +84,8 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
 
   return (
     <div className="space-y-8">
+      <AppStatus />
+
       {/* Module 10 User Settings & Preference Management Layout */}
       <SettingsLayout />
 

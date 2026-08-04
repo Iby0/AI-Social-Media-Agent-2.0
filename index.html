@@ -2,10 +2,23 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>My Google AI Studio App</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+    <meta name="theme-color" content="#0f172a" />
+    <meta name="description" content="AI Social Media Agent & Autonomous Scheduler - Offline-First Local IndexedDB Application" />
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="apple-touch-icon" href="/pwa-192.png" />
+    
+    <!-- OpenGraph / Social SEO -->
+    <meta property="og:title" content="AI Social Media Agent & Autonomous Scheduler" />
+    <meta property="og:description" content="Manage social channels, compose posts with AI, schedule workflows, and analyze performance locally." />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <title>AI Social Media Agent & Autonomous Scheduler</title>
   </head>
-  <body>
+  <body className="bg-slate-900 text-slate-100 antialiased selection:bg-indigo-500 selection:text-white">
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
